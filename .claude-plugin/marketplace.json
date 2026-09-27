@@ -1,12 +1,12 @@
 {
   "name": "first-move-marketplace",
   "owner": { "name": "Burak Fenercioglu" },
-  "description": "First Move — the AI opening move for Salesforce sellers on Claude.",
+  "description": "First Move — the AI CRO makes the first move, on top of Salesforce in Claude.",
   "plugins": [
     {
       "name": "first-move",
       "source": ".",
-      "description": "Top 3 next-best plays on Turn 0, ranked from your Salesforce data and wired to Salesforce for Sales skills."
+      "description": "Opens every seller's session with their top 3 next-best plays — ranked from live revenue context and routed into Salesforce's prebuilt sales skills. No blank prompt, no guessing, just the next best move."
     }
   ]
 }

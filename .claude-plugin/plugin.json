@@ -2,7 +2,7 @@
   "name": "first-move",
   "displayName": "First Move",
   "version": "0.4.0",
-  "description": "Opens a seller's Claude session with their top 3 next-best plays, ranked from their Salesforce data and each wired to a Salesforce for Sales skill — instead of a blank prompt.",
+  "description": "The AI CRO makes the first move. Salesforce in Claude gives sellers 37 prebuilt sales skills; First Move decides which to run first — opening every session with the top 3 next-best plays, ranked from live revenue context and routed into governed Salesforce action. No blank prompt, no guessing.",
   "author": { "name": "Burak Fenercioglu" },
   "keywords": ["salesforce", "sales", "agentforce", "cowork", "productivity", "next-best-action"],
   "license": "MIT",

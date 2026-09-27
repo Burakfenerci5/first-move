@@ -1,11 +1,15 @@
 # First Move
 
-> Open Claude and it already knows — your top 3 next-best plays, drawn from your
-> own Salesforce data, instead of a blank box.
+> The AI CRO makes the first move. Open Claude and it already leads — your top 3
+> next-best plays, drawn from live revenue context and routed into Salesforce in
+> Claude's prebuilt sales skills. No blank prompt. No guessing. Just the next best move.
 
-First Move is a thin **composition layer** on top of the Salesforce for Sales
-skills. It never forks or re-implements those skills — it scans what a rep owns,
-ranks the highest-value plays, and routes each one to the right skill.
+Claudeforce put 37 prebuilt sales skills inside Claude — **Salesforce in Claude**,
+the seller's AI CRO. But every session still opens to a blank prompt, leaving the
+seller to decide what to ask first. First Move takes **Turn 0**: it scans the
+seller's book, ranks the highest-value plays, and opens with the top 3 — each
+routed into one of those prebuilt skills. It's a thin **composition layer**; it
+never forks or re-implements the skills — it just decides which move to make first.
 
 ## Status: Phase 1 — the brain (sample data, read-only)
 
