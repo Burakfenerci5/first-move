@@ -1,0 +1,100 @@
+{
+  "version": "0.2.0-phase1",
+  "as_of": "2026-09-26",
+  "weights": { "value": 0.30, "urgency": 0.50, "severity": 0.20 },
+  "thresholds": {
+    "urgency_horizon_days": 45,
+    "stale_cap_days": 21,
+    "quiet_min_days": 7,
+    "closing_soon_days": 7,
+    "new_lead_max_age_days": 7,
+    "renewal_window_days": 90,
+    "hygiene_gap_cap": 5,
+    "unlogged_call_cap": 3,
+    "lead_proxy_value": 20000,
+    "coverage_target_multiple": 3.0,
+    "coaching_activity_target": 15,
+    "health_risk_threshold": 60
+  },
+  "rules": {
+    "use_expected_value": true,
+    "diversify": true,
+    "guarantee_quick_win": true,
+    "top_n": 3
+  },
+  "recommendations": {
+    "deal_gone_quiet": {
+      "enabled": true, "persona": "rep", "scope": "account", "effort": "medium",
+      "title": "{account}'s deal has gone quiet",
+      "button": "Help me re-engage {account}",
+      "skill_chain": ["deal-signals", "deal-advance-gap", "draft-outreach"]
+    },
+    "call_today_no_prep": {
+      "enabled": true, "persona": "rep", "scope": "account", "effort": "low",
+      "title": "You have a call today with no prep",
+      "button": "Prep my call with {account}",
+      "skill_chain": ["account-context", "call-prep", "stakeholder-map"]
+    },
+    "pipeline_hygiene": {
+      "enabled": true, "persona": "rep", "scope": "portfolio", "effort": "low",
+      "title": "{count} deals are missing a next step",
+      "button": "Clean up my pipeline",
+      "skill_chain": ["salesforce-hygiene-check", "deal-advance-gap"]
+    },
+    "log_call_outcome": {
+      "enabled": true, "persona": "rep", "scope": "account", "effort": "low",
+      "title": "Log the outcome of {count} recent calls",
+      "button": "Log my calls",
+      "skill_chain": ["call-follow-up"]
+    },
+    "close_date_slipping": {
+      "enabled": true, "persona": "rep", "scope": "account", "effort": "medium",
+      "title": "{account} closes in {days} days but looks stuck",
+      "button": "Firm up {account}",
+      "skill_chain": ["deal-advance-gap"]
+    },
+    "untouched_new_leads": {
+      "enabled": true, "persona": "rep", "scope": "portfolio", "effort": "low",
+      "title": "{count} new leads are waiting on a first touch",
+      "button": "Triage my new leads",
+      "skill_chain": ["lead-triage", "draft-outreach"]
+    },
+    "renewal_horizon": {
+      "enabled": true, "persona": "rep", "scope": "account", "effort": "medium",
+      "title": "{account} renews in {days} days",
+      "button": "Start the {account} renewal",
+      "skill_chain": ["renewal-radar", "account-context", "call-prep"]
+    },
+
+    "forecast_gap": {
+      "enabled": true, "persona": "leader", "scope": "portfolio", "effort": "high",
+      "title": "{pct}% of your quota is still uncommitted",
+      "button": "Build my forecast story",
+      "skill_chain": ["forecast-narrative", "pipeline-review"]
+    },
+    "team_pipeline_coverage": {
+      "enabled": true, "persona": "leader", "scope": "portfolio", "effort": "medium",
+      "title": "{count} reps are below healthy pipeline coverage",
+      "button": "Review team pipeline",
+      "skill_chain": ["pipeline-review", "deal-advance-gap"]
+    },
+    "deal_needs_review": {
+      "enabled": true, "persona": "leader", "scope": "account", "effort": "medium",
+      "title": "{account}'s deal is stuck with no close plan",
+      "button": "Review the {account} deal",
+      "skill_chain": ["deal-review", "close-plan"]
+    },
+    "rep_needs_coaching": {
+      "enabled": true, "persona": "leader", "scope": "rep", "effort": "medium",
+      "title": "{account} looks like they need coaching",
+      "button": "Prep a 1:1 for {account}",
+      "skill_chain": ["pipeline-review", "deal-review"]
+    },
+    "account_at_risk": {
+      "enabled": true, "persona": "leader", "scope": "account", "effort": "medium",
+      "title": "{account}'s health is slipping before renewal",
+      "button": "Check in on {account}",
+      "skill_chain": ["customer-health", "account-context"]
+    }
+  }
+}

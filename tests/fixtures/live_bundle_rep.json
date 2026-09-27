@@ -1,0 +1,35 @@
+{
+  "_note": "A synthetic bundle mirroring exactly what the Salesforce connector's dispatch_readonly returns for the SOQL_REP queries. Records reproduce data/sample_book.json in native REST shape (nested Account, OpportunityContactRoles subquery, DateTime CreatedDate, polymorphic What) so scripts/live_scan.py can be verified end-to-end offline. Initech carries a Contract_End_Date__c to exercise the optional renewal mapping.",
+  "rep": { "name": "Jordan Rivera", "role": "Account Executive", "persona": "rep", "user_id": "005SAMPLE0000001" },
+  "opportunities": {
+    "totalSize": 7,
+    "done": true,
+    "records": [
+      { "attributes": { "type": "Opportunity" }, "Id": "006A00001", "Name": "Acme Corp — Platform Expansion", "Amount": 95000, "Probability": 90, "StageName": "Negotiation/Review", "CloseDate": "2026-09-30", "LastActivityDate": "2026-09-14", "NextStep": "Send revised proposal", "Type": "New Business", "Account": { "attributes": { "type": "Account" }, "Name": "Acme Corp" }, "OpportunityContactRoles": { "totalSize": 3, "done": true, "records": [ { "Id": "00K01" }, { "Id": "00K02" }, { "Id": "00K03" } ] } },
+      { "attributes": { "type": "Opportunity" }, "Id": "006A00002", "Name": "Globex — New Logo", "Amount": 60000, "Probability": 75, "StageName": "Proposal/Price Quote", "CloseDate": "2026-10-20", "LastActivityDate": "2026-09-24", "NextStep": null, "Type": "New Business", "Account": { "attributes": { "type": "Account" }, "Name": "Globex" }, "OpportunityContactRoles": { "totalSize": 2, "done": true, "records": [ { "Id": "00K04" }, { "Id": "00K05" } ] } },
+      { "attributes": { "type": "Opportunity" }, "Id": "006A00003", "Name": "Initech — Renewal FY27", "Amount": 42000, "Probability": 90, "StageName": "Renewal", "CloseDate": "2026-11-15", "Contract_End_Date__c": "2026-11-30", "LastActivityDate": "2026-08-20", "NextStep": "Confirm renewal terms", "Type": "Renewal", "Account": { "attributes": { "type": "Account" }, "Name": "Initech" }, "OpportunityContactRoles": { "totalSize": 2, "done": true, "records": [ { "Id": "00K06" }, { "Id": "00K07" } ] } },
+      { "attributes": { "type": "Opportunity" }, "Id": "006A00004", "Name": "Umbrella — Upsell", "Amount": 30000, "Probability": 20, "StageName": "Qualification", "CloseDate": "2026-09-20", "LastActivityDate": "2026-09-05", "NextStep": null, "Type": "Upsell", "Account": { "attributes": { "type": "Account" }, "Name": "Umbrella Inc" }, "OpportunityContactRoles": { "totalSize": 2, "done": true, "records": [ { "Id": "00K08" }, { "Id": "00K09" } ] } },
+      { "attributes": { "type": "Opportunity" }, "Id": "006A00005", "Name": "Soylent — New", "Amount": 18000, "Probability": 10, "StageName": "Discovery", "CloseDate": "2026-12-10", "LastActivityDate": "2026-09-25", "NextStep": "Discovery call booked", "Type": "New Business", "Account": { "attributes": { "type": "Account" }, "Name": "Soylent Co" }, "OpportunityContactRoles": { "totalSize": 2, "done": true, "records": [ { "Id": "00K10" }, { "Id": "00K11" } ] } },
+      { "attributes": { "type": "Opportunity" }, "Id": "006A00006", "Name": "Hooli — Platform", "Amount": 120000, "Probability": 50, "StageName": "Value Proposition", "CloseDate": "2026-10-31", "LastActivityDate": "2026-09-23", "NextStep": "Align on ROI model", "Type": "New Business", "Account": { "attributes": { "type": "Account" }, "Name": "Hooli" }, "OpportunityContactRoles": { "totalSize": 4, "done": true, "records": [ { "Id": "00K12" }, { "Id": "00K13" }, { "Id": "00K14" }, { "Id": "00K15" } ] } },
+      { "attributes": { "type": "Opportunity" }, "Id": "006A00007", "Name": "Vandelay — Expansion", "Amount": 25000, "Probability": 75, "StageName": "Proposal/Price Quote", "CloseDate": "2026-09-29", "LastActivityDate": "2026-09-10", "NextStep": null, "Type": "Upsell", "Account": { "attributes": { "type": "Account" }, "Name": "Vandelay Industries" }, "OpportunityContactRoles": { "totalSize": 1, "done": true, "records": [ { "Id": "00K16" } ] } }
+    ]
+  },
+  "tasks": {
+    "totalSize": 3,
+    "done": true,
+    "records": [
+      { "attributes": { "type": "Task" }, "Id": "00TA00001", "Subject": "Call: Acme pricing sync", "Type": "Call", "TaskSubtype": "Call", "ActivityDate": "2026-09-24", "Status": "Open", "WhatId": "006A00001", "What": { "attributes": { "type": "Opportunity" }, "Name": "Acme Corp — Platform Expansion" } },
+      { "attributes": { "type": "Task" }, "Id": "00TA00002", "Subject": "Call: Vandelay check-in", "Type": "Call", "TaskSubtype": "Call", "ActivityDate": "2026-09-18", "Status": "Open", "WhatId": "006A00007", "What": { "attributes": { "type": "Opportunity" }, "Name": "Vandelay — Expansion" } },
+      { "attributes": { "type": "Task" }, "Id": "00TA00003", "Subject": "Call: Hooli technical demo", "Type": "Call", "TaskSubtype": "Call", "ActivityDate": "2026-09-26", "Status": "Open", "WhatId": "006A00006", "What": { "attributes": { "type": "Opportunity" }, "Name": "Hooli — Platform" } }
+    ]
+  },
+  "leads": {
+    "totalSize": 3,
+    "done": true,
+    "records": [
+      { "attributes": { "type": "Lead" }, "Id": "00LA00001", "Name": "Dana Kim", "Company": "TechNova", "Status": "New", "CreatedDate": "2026-09-23T09:12:00.000+0000", "LastActivityDate": null },
+      { "attributes": { "type": "Lead" }, "Id": "00LA00002", "Name": "Sam Patel", "Company": "Brightling", "Status": "New", "CreatedDate": "2026-09-25T16:40:00.000+0000", "LastActivityDate": null },
+      { "attributes": { "type": "Lead" }, "Id": "00LA00003", "Name": "Chris Lee", "Company": "Oldcorp", "Status": "Working", "CreatedDate": "2026-08-01T11:05:00.000+0000", "LastActivityDate": "2026-09-10" }
+    ]
+  }
+}

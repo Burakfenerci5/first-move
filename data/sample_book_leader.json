@@ -1,0 +1,19 @@
+{
+  "_note": "LEADER book for a sales manager. Different shape from a rep book: team rollups, a forecast summary, key deals across the team, and account health. Mirrors the rollups a manager gets from Salesforce (team pipeline, ForecastingItem-style commit, Opportunity, Account health). Relative to as_of 2026-09-26.",
+  "rep": { "name": "Morgan Vale", "role": "Regional Sales Manager", "persona": "leader", "user_id": "005SAMPLE0000009" },
+  "forecast": { "period": "Q3 FY27", "quota": 2000000, "commit": 1400000, "best_case": 1750000, "closed": 900000, "days_left": 12 },
+  "team": [
+    { "name": "Jordan Rivera", "quota": 500000, "closed": 210000, "pipeline": 620000, "commit": 360000, "activities_last_7d": 22 },
+    { "name": "Alex Chen", "quota": 500000, "closed": 180000, "pipeline": 410000, "commit": 300000, "activities_last_7d": 6 },
+    { "name": "Sam Okafor", "quota": 500000, "closed": 260000, "pipeline": 900000, "commit": 480000, "activities_last_7d": 18 },
+    { "name": "Dana Lee", "quota": 500000, "closed": 150000, "pipeline": 480000, "commit": 260000, "activities_last_7d": 4 }
+  ],
+  "key_deals": [
+    { "id": "006C00001", "name": "MegaCorp — Platform", "account": "MegaCorp", "amount": 250000, "probability": 60, "stage": "Proposal/Price Quote", "owner": "Alex Chen", "close_date": "2026-10-05", "last_activity_date": "2026-09-05", "has_close_plan": false },
+    { "id": "006C00002", "name": "Initrode — Expansion", "account": "Initrode", "amount": 180000, "probability": 80, "stage": "Negotiation/Review", "owner": "Sam Okafor", "close_date": "2026-10-12", "last_activity_date": "2026-09-22", "has_close_plan": true }
+  ],
+  "key_accounts": [
+    { "name": "Vandelay Industries", "arr": 220000, "health_score": 45, "renewal_date": "2026-11-10", "owner": "Jordan Rivera" },
+    { "name": "Globex", "arr": 150000, "health_score": 80, "renewal_date": "2026-12-01", "owner": "Dana Lee" }
+  ]
+}

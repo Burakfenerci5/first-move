@@ -1,0 +1,10 @@
+{
+  "name": "first-move",
+  "displayName": "First Move",
+  "version": "0.4.0",
+  "description": "Opens a seller's Claude session with their top 3 next-best plays, ranked from their Salesforce data and each wired to a Salesforce for Sales skill — instead of a blank prompt.",
+  "author": { "name": "Burak Fenercioglu" },
+  "keywords": ["salesforce", "sales", "agentforce", "cowork", "productivity", "next-best-action"],
+  "license": "MIT",
+  "skills": ["."]
+}
