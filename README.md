@@ -11,14 +11,19 @@ seller's book, ranks the highest-value plays, and opens with the top 3 — each
 routed into one of those prebuilt skills. It's a thin **composition layer**; it
 never forks or re-implements the skills — it just decides which move to make first.
 
-## Status: Phase 1 — the brain (sample data, read-only)
+## Status: live by default, read-only
 
-This phase proves the hardest, most defensible part: **which three plays, and
-why.** It runs entirely on bundled sample data with no Salesforce connection and
-makes no writes. It scores on **expected value** (amount × probability) with
-**robustness-calibrated weights** (`scripts/calibrate.py`), works for both
-**rep and leader** personas, de-dupes and diversifies the Top 3, and guarantees
-a quick win.
+First Move scans the seller's **live** book when a Salesforce connector is
+connected — owner-scoped SOQL over the connector's `dispatch_readonly`
+(`scripts/live_scan.py`) — and folds in read-only Slack / Gmail / Calendar
+signals when those are connected. It falls back to bundled **sample data** only
+when nothing is connected, so the opening always demonstrates the product. The
+scan makes **no writes**; writeback lives in the action layer a button invokes.
+
+The defensible core is the same either way: **which three plays, and why.** It
+scores on **expected value** (amount × probability) with **robustness-calibrated
+weights** (`scripts/calibrate.py`), works for both **rep and leader** personas,
+de-dupes and diversifies the Top 3, and guarantees a quick win.
 
 ```bash
 python3 scripts/rank.py                         # default rep book

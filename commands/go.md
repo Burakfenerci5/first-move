@@ -6,15 +6,18 @@ Invoke the `first-move` skill now to present the seller's **top 3 next-best
 plays**, ranked from their book of business.
 
 Steps:
-1. Get the ranked plays as JSON.
-   - **Live org (preferred when connected):** if a Salesforce connector with a
+1. Get the ranked plays as JSON — **live first**.
+   - **Live org (the default when connected):** if a Salesforce connector with a
      `dispatch_readonly` tool is connected, run the live scan in
-     `references/live-scan.md` (discover version + user, run the `SOQL_REP`
-     queries, assemble a bundle, then
-     `live_scan.py --in bundle.json --out live_book.json` and
-     `rank.py --json --book-path live_book.json`). Confirm the connected org is
-     the intended one before presenting.
-   - **Sample data (fallback):** no connector →
+     `references/live-scan.md` (discover version + running user, confirm the org,
+     run the **owner-scoped** `SOQL_REP` queries, assemble a bundle, then
+     `live_scan.py --in bundle.json --out live_book.json`). If Slack / Gmail /
+     Calendar are connected, also gather read-only signals
+     (`references/signals-scan.md`) into the book's `signals` array — today's
+     external meetings first. Then `rank.py --json --book-path live_book.json`. An
+     empty owner-scoped book is expected for a non-AE — do not widen scope; let
+     signals fill the opening.
+   - **Sample data (fallback — nothing connected):**
      ```bash
      python3 "${CLAUDE_PLUGIN_ROOT}/scripts/rank.py" --json
      ```
