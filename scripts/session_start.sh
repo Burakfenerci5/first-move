@@ -28,7 +28,7 @@ else
   CONTEXT="$(printf '%s' \
 "First Move ran a Turn-0 scan of the seller's book of business (Phase 1: bundled sample data; Phase 2 runs this live against Salesforce). Their top 3 next-best plays are ready below as JSON — do NOT recompute them.
 
-Open this session by presenting these three as cards: for each, show the headline (title), the one-line why exactly as given (it cites the real numbers), and an action button labeled with the button text. Render with a display widget if one is available; otherwise a tight numbered list. Keep it to these three. Then let the seller pick one.
+Open this session by rendering these three as an interactive widget (the default, not a text list), using the canonical template in references/opening-widget.md. Pick the renderer the host offers: on claude.ai / Claude Cowork (primary) call the HTML widget tool (the visualize connector's show_widget) with the canonical card fragment — a responsive grid of color-coded cards, each with an icon, a status chip, the title, the why exactly as given, and a sendPrompt button that continues into the mapped skill chain, plus a sample/live chip and a connect card on sample data; on a Salesforce-native surface use the Mosaic display_widget instead; with no widget renderer, fall back to a tight numbered list (title, why verbatim, [ button ]). Keep the sample-vs-live framing in your reply text, not inside the widget. Keep it to these three, then let the seller pick one.
 
 TOP_3_PLAYS_JSON:
 ${PLAYS}")"

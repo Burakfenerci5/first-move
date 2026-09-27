@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0-phase1",
+  "version": "0.4.0-signals",
   "as_of": "2026-09-26",
   "weights": { "value": 0.30, "urgency": 0.50, "severity": 0.20 },
   "thresholds": {
@@ -22,79 +22,123 @@
     "guarantee_quick_win": true,
     "top_n": 3
   },
+  "signals": {
+    "_comment": "Cross-connector signals (Slack/Gmail/Calendar). Salesforce-anchored: a signal that names a book account BOOSTS that play's urgency by urgency_boost x recency and appends its note to the why; a signal with no account match becomes a workspace play that only fills Top-N slots the Salesforce book leaves open. See references/signals-scan.md.",
+    "urgency_boost": 0.15,
+    "hot_hours": 4,
+    "warm_hours": 24,
+    "origination": {
+      "meeting_external": {
+        "enabled": true, "persona": "both", "scope": "account", "effort": "low",
+        "value_proxy": 0.5, "severity": 0.4,
+        "title": "Prep for {title}",
+        "button": "Prep me for {title}",
+        "skill_chain": ["account-context", "call-prep"],
+        "render": { "variant": "warning", "eyebrow": "Meeting" }
+      },
+      "inbound_reply_due": {
+        "enabled": true, "persona": "both", "scope": "account", "effort": "low",
+        "value_proxy": 0.45, "severity": 0.45,
+        "title": "{who} is waiting on your reply",
+        "button": "Help me reply to {who}",
+        "skill_chain": ["draft-outreach"],
+        "render": { "variant": "warning", "eyebrow": "Reply due" }
+      },
+      "customer_message": {
+        "enabled": true, "persona": "both", "scope": "account", "effort": "low",
+        "value_proxy": 0.45, "severity": 0.45,
+        "title": "{who} messaged you in Slack",
+        "button": "Help me respond to {who}",
+        "skill_chain": ["draft-outreach"],
+        "render": { "variant": "warning", "eyebrow": "Slack" }
+      }
+    }
+  },
   "recommendations": {
     "deal_gone_quiet": {
       "enabled": true, "persona": "rep", "scope": "account", "effort": "medium",
       "title": "{account}'s deal has gone quiet",
       "button": "Help me re-engage {account}",
-      "skill_chain": ["deal-signals", "deal-advance-gap", "draft-outreach"]
+      "skill_chain": ["deal-signals", "deal-advance-gap", "draft-outreach"],
+      "render": { "variant": "error", "eyebrow": "Re-engage" }
     },
     "call_today_no_prep": {
       "enabled": true, "persona": "rep", "scope": "account", "effort": "low",
       "title": "You have a call today with no prep",
       "button": "Prep my call with {account}",
-      "skill_chain": ["account-context", "call-prep", "stakeholder-map"]
+      "skill_chain": ["account-context", "call-prep", "stakeholder-map"],
+      "render": { "variant": "warning", "eyebrow": "Call prep" }
     },
     "pipeline_hygiene": {
       "enabled": true, "persona": "rep", "scope": "portfolio", "effort": "low",
       "title": "{count} deals are missing a next step",
       "button": "Clean up my pipeline",
-      "skill_chain": ["salesforce-hygiene-check", "deal-advance-gap"]
+      "skill_chain": ["salesforce-hygiene-check", "deal-advance-gap"],
+      "render": { "variant": "recommended", "eyebrow": "Quick win" }
     },
     "log_call_outcome": {
       "enabled": true, "persona": "rep", "scope": "account", "effort": "low",
       "title": "Log the outcome of {count} recent calls",
       "button": "Log my calls",
-      "skill_chain": ["call-follow-up"]
+      "skill_chain": ["call-follow-up"],
+      "render": { "variant": "recommended", "eyebrow": "Log calls" }
     },
     "close_date_slipping": {
       "enabled": true, "persona": "rep", "scope": "account", "effort": "medium",
       "title": "{account} closes in {days} days but looks stuck",
       "button": "Firm up {account}",
-      "skill_chain": ["deal-advance-gap"]
+      "skill_chain": ["deal-advance-gap"],
+      "render": { "variant": "error", "eyebrow": "At risk" }
     },
     "untouched_new_leads": {
       "enabled": true, "persona": "rep", "scope": "portfolio", "effort": "low",
       "title": "{count} new leads are waiting on a first touch",
       "button": "Triage my new leads",
-      "skill_chain": ["lead-triage", "draft-outreach"]
+      "skill_chain": ["lead-triage", "draft-outreach"],
+      "render": { "variant": "warning", "eyebrow": "Fresh leads" }
     },
     "renewal_horizon": {
       "enabled": true, "persona": "rep", "scope": "account", "effort": "medium",
       "title": "{account} renews in {days} days",
       "button": "Start the {account} renewal",
-      "skill_chain": ["renewal-radar", "account-context", "call-prep"]
+      "skill_chain": ["renewal-radar", "account-context", "call-prep"],
+      "render": { "variant": "warning", "eyebrow": "Renewal" }
     },
 
     "forecast_gap": {
       "enabled": true, "persona": "leader", "scope": "portfolio", "effort": "high",
       "title": "{pct}% of your quota is still uncommitted",
       "button": "Build my forecast story",
-      "skill_chain": ["forecast-narrative", "pipeline-review"]
+      "skill_chain": ["forecast-narrative", "pipeline-review"],
+      "render": { "variant": "error", "eyebrow": "Forecast" }
     },
     "team_pipeline_coverage": {
       "enabled": true, "persona": "leader", "scope": "portfolio", "effort": "medium",
       "title": "{count} reps are below healthy pipeline coverage",
       "button": "Review team pipeline",
-      "skill_chain": ["pipeline-review", "deal-advance-gap"]
+      "skill_chain": ["pipeline-review", "deal-advance-gap"],
+      "render": { "variant": "warning", "eyebrow": "Coverage" }
     },
     "deal_needs_review": {
       "enabled": true, "persona": "leader", "scope": "account", "effort": "medium",
       "title": "{account}'s deal is stuck with no close plan",
       "button": "Review the {account} deal",
-      "skill_chain": ["deal-review", "close-plan"]
+      "skill_chain": ["deal-review", "close-plan"],
+      "render": { "variant": "error", "eyebrow": "Deal review" }
     },
     "rep_needs_coaching": {
       "enabled": true, "persona": "leader", "scope": "rep", "effort": "medium",
       "title": "{account} looks like they need coaching",
       "button": "Prep a 1:1 for {account}",
-      "skill_chain": ["pipeline-review", "deal-review"]
+      "skill_chain": ["pipeline-review", "deal-review"],
+      "render": { "variant": "recommended", "eyebrow": "Coaching" }
     },
     "account_at_risk": {
       "enabled": true, "persona": "leader", "scope": "account", "effort": "medium",
       "title": "{account}'s health is slipping before renewal",
       "button": "Check in on {account}",
-      "skill_chain": ["customer-health", "account-context"]
+      "skill_chain": ["customer-health", "account-context"],
+      "render": { "variant": "error", "eyebrow": "At risk" }
     }
   }
 }

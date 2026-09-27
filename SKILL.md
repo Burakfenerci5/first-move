@@ -47,6 +47,15 @@ forces.
   `persona` field. Both run on sample data. The **live** rep scan is wired; the
   live **leader** scan (team rollups, forecast, health) is Phase 2b — it depends
   on org-specific Collaborative Forecasts / team config.
+- **Cross-connector signals (Salesforce-anchored).** When other connectors are
+  connected (Slack, Gmail, Calendar), gather read-only signals and fold them into
+  the book as a `signals` array (recipe: `references/signals-scan.md`). A signal
+  that names a book account **sharpens** that play — it boosts urgency and
+  appends its note to the why. A signal with no matching account becomes a
+  **workspace** play that only fills a Top-3 slot the Salesforce book leaves
+  open, so a thin pipeline still opens with a real first move. Salesforce deals
+  stay the spine; signals never displace a live deal play. The engine stays
+  offline — the assistant gathers signals at runtime, same as the live scan.
 
 ## How to run
 1. Run the ranking engine (defaults to the rep sample book):
@@ -63,12 +72,26 @@ forces.
    candidate list (with the value/urgency/severity breakdown), then the **Top 3**
    with a plain-language "why" for each, and finally a `=== JSON ===` block for
    rendering. `preview/cards.html` renders that JSON as the opening message.
-2. Present the Top 3 to the rep as **three cards**. For each card show:
-   - the headline,
-   - the one-line **why** (cite the actual numbers — deal size, days quiet, count),
-   - a **button** that continues into the mapped skill chain.
-   Render with an interactive widget when one is available (in production, see
-   `salesforce-for-sales:using-display-widget`); otherwise present a tight list.
+2. **Render the Top 3 as an interactive widget — this is the default, not a
+   text list.** Draw one canonical card set so the SessionStart opening and
+   `/first-move:go` look identical. Pick the renderer the host offers, in order:
+   - **claude.ai / Claude Cowork (primary):** the HTML card widget. Call the
+     workspace's HTML widget tool (on claude.ai, the `visualize` connector's
+     `show_widget`) with the fragment in `references/opening-widget.md` — a
+     responsive grid of color-coded cards (icon + status chip + title + one-line
+     **why** verbatim + a `sendPrompt` button that continues into the mapped
+     skill chain), a sample/live chip, and a connect card on sample data. This is
+     the renderer behind Cowork and the Anthropic directory, so it is the one
+     that matters most.
+   - **Salesforce-native surface:** the Mosaic `display_widget` (same plays,
+     tiles instead of HTML) — see the alternate section of the recipe.
+   - **No widget renderer (plain terminal):** a tight numbered list (title, why,
+     `[ button ]`).
+
+   Render `top` in the given order; never restate the cards as prose beneath a
+   widget that already drew them. Put the sample-vs-live framing sentence in your
+   reply text next to the widget, not inside it. Full recipe, canonical fragment,
+   and Mosaic envelope: `references/opening-widget.md`.
 3. **Button behavior (Phase 1):** tapping a button invokes the mapped Salesforce
    for Sales skill against the *sample* record — e.g. `deal-advance-gap` on the
    Acme sample opportunity. Tell the rep that in production this runs on their
@@ -109,6 +132,12 @@ thresholds, rules, and skill chains in `config/catalog.json` — no code change 
 - `preview/cards.html` — the opening message rendered from the engine's JSON.
 - `references/scoring-model.md` — how scoring works and why (incl. calibration).
 - `references/live-scan.md` — the runtime recipe for the live org scan.
+- `references/opening-widget.md` — the opening-render recipe: the canonical HTML
+  card fragment (claude.ai / Cowork, primary), the Mosaic `display_widget`
+  envelope (Salesforce surfaces), the engine-JSON → card mapping, sample-vs-live
+  framing, signals rendering, and the text fallback.
+- `references/signals-scan.md` — the runtime recipe for gathering cross-connector
+  signals (Calendar / Gmail / Slack, read-only) and folding them into the book.
 - `.claude-plugin/` — plugin + marketplace manifests for install (see README).
 
 ## Honesty / boundaries

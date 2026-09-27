@@ -1,0 +1,14 @@
+{
+  "_note": "Thin-pipeline REP book: almost no Salesforce plays (one early-stage opp, no open calls, no new leads), so cross-connector `signals` originate WORKSPACE plays to fill the Top 3. This is the empty/thin-pipeline fallback — the case where a seller (or a non-seller) would otherwise open to nothing. None of the signals name a book account, so all three become workspace candidates. as_of 2026-09-26. See references/signals-scan.md.",
+  "rep": { "name": "Alex Chen", "role": "Solutions Consultant", "persona": "rep", "user_id": "005SAMPLE0000009" },
+  "opportunities": [
+    { "id": "006T00001", "name": "Wayne Enterprises — POC", "account": "Wayne Enterprises", "amount": 15000, "probability": 30, "stage": "Discovery", "close_date": "2026-12-20", "last_activity_date": "2026-09-25", "next_step": "Scope the POC", "type": "New Business", "contact_count": 1 }
+  ],
+  "tasks": [],
+  "leads": [],
+  "signals": [
+    { "kind": "meeting_external", "who": "Nadia Osei (Cyberdyne)", "title": "Cyberdyne intro call", "today": true, "when": "today 11:00", "source": "calendar", "link": "https://calendar.google.com/calendar/event?eid=SAMPLE1" },
+    { "kind": "inbound_reply_due", "who": "Marcus Vale (Tyrell Corp)", "age_hours": 3, "when": "3h ago", "source": "email", "link": "https://mail.google.com/mail/u/0/#inbox/SAMPLE", "why": "Marcus asked for pricing on the Tyrell rollout and is waiting on you" },
+    { "kind": "customer_message", "who": "Jin Park (Aperture)", "age_hours": 20, "when": "yesterday", "source": "slack", "link": "https://example.slack.com/archives/SAMPLE2" }
+  ]
+}

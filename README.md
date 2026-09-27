@@ -47,7 +47,9 @@ first-move/                          # plugin root (and a single-plugin marketpl
 ├── data/
 │   ├── sample_book.json             # sample rep book
 │   ├── sample_book_2.json           # a second, differently-shaped rep book
-│   └── sample_book_leader.json      # sample sales-leader book (team rollups, forecast)
+│   ├── sample_book_leader.json      # sample sales-leader book (team rollups, forecast)
+│   ├── sample_book_signals.json     # rep book + cross-connector signals (enrichment demo)
+│   └── sample_book_thin.json        # thin pipeline; signals fill the Top 3 (fallback demo)
 ├── commands/
 │   └── go.md                        # /first-move:go — manual one-tap trigger
 ├── hooks/
@@ -60,11 +62,14 @@ first-move/                          # plugin root (and a single-plugin marketpl
 ├── preview/
 │   └── cards.html                   # the opening message, rendered from rank.py's JSON
 ├── tests/
+│   ├── test_signals.py              # regression test for the signals layer
 │   └── fixtures/
 │       └── live_bundle_rep.json     # raw-SOQL fixture; proves live == sample Top-3
 └── references/
     ├── scoring-model.md             # how the ranking works and why
-    └── live-scan.md                 # runtime recipe for the live org scan
+    ├── live-scan.md                 # runtime recipe for the live org scan
+    ├── opening-widget.md            # opening-render recipe (HTML card + Mosaic + fallback)
+    └── signals-scan.md              # runtime recipe for cross-connector signals
 ```
 
 ## Install (Phase 4 groundwork)
@@ -96,9 +101,21 @@ the repo updates the skill for everyone who installed it.
     `references/live-scan.md`). Rep persona wired; leader is Phase 2b.
   - *Write half:* wire buttons to real skill chains + preview-then-commit
     writeback. *(needs the Salesforce for Sales skills via h360)*
-- **Phase 3 — The first move — done:** rendered cards (`preview/`) + triggers —
-  a `SessionStart` hook that fires the scan on launch and injects the top 3, and
-  a `/first-move:go` command for on-demand use.
+- **Phase 3 — The first move — done:** the opening renders as an **interactive
+  widget** — one color-coded card per play with an action button. On
+  claude.ai / Claude Cowork (and the Anthropic directory) this is an **HTML card
+  set** via the workspace widget renderer (`show_widget`); on Salesforce-native
+  surfaces it's the connector's Mosaic `display_widget`; a text list is the
+  fallback (recipe: `references/opening-widget.md`; static preview:
+  `preview/cards.html`). Triggers: a `SessionStart` hook that fires the scan on
+  launch and injects the top 3, and a `/first-move:go` command for on-demand use.
+- **Signals — Salesforce-anchored cross-connector enrichment — done:** when
+  Slack / Gmail / Calendar are connected, First Move folds read-only signals into
+  the book (recipe: `references/signals-scan.md`). A signal about a book account
+  **sharpens** that play (urgency + a note on the why); an unmatched signal
+  becomes a **workspace** play that only fills a Top-3 slot the pipeline leaves
+  open — so a thin or empty book still opens with a real first move. Salesforce
+  stays the spine; signals never displace a live deal play.
 - **Phase 4 — Easy install:** package as a plugin others add once; self-updates as new skills ship. *(manifests scaffolded; see Install)*
 - **North star:** true zero-touch Turn 0, once the platform exposes an opening hook.
 

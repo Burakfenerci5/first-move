@@ -1,0 +1,27 @@
+{
+  "_note": "REP book (same shape as sample_book.json) WITH a cross-connector `signals` array. Demonstrates enrichment: a calendar signal that names a book account (Acme Corp) boosts + annotates that play; a Slack signal about a non-book company (Stark Industries) becomes a workspace candidate that does NOT displace a live deal play because the Top 3 is already full. as_of 2026-09-26. See references/signals-scan.md.",
+  "rep": { "name": "Jordan Rivera", "role": "Account Executive", "persona": "rep", "user_id": "005SAMPLE0000001" },
+  "opportunities": [
+    { "id": "006A00001", "name": "Acme Corp — Platform Expansion", "account": "Acme Corp", "amount": 95000, "probability": 90, "stage": "Negotiation/Review", "close_date": "2026-09-30", "last_activity_date": "2026-09-14", "next_step": "Send revised proposal", "type": "New Business", "contact_count": 3 },
+    { "id": "006A00002", "name": "Globex — New Logo", "account": "Globex", "amount": 60000, "probability": 75, "stage": "Proposal/Price Quote", "close_date": "2026-10-20", "last_activity_date": "2026-09-24", "next_step": "", "type": "New Business", "contact_count": 2 },
+    { "id": "006A00003", "name": "Initech — Renewal FY27", "account": "Initech", "amount": 42000, "probability": 90, "stage": "Renewal", "close_date": "2026-11-15", "contract_end_date": "2026-11-30", "last_activity_date": "2026-08-20", "next_step": "Confirm renewal terms", "type": "Renewal", "contact_count": 2 },
+    { "id": "006A00004", "name": "Umbrella — Upsell", "account": "Umbrella Inc", "amount": 30000, "probability": 20, "stage": "Qualification", "close_date": "2026-09-20", "last_activity_date": "2026-09-05", "next_step": "", "type": "Upsell", "contact_count": 2 },
+    { "id": "006A00005", "name": "Soylent — New", "account": "Soylent Co", "amount": 18000, "probability": 10, "stage": "Discovery", "close_date": "2026-12-10", "last_activity_date": "2026-09-25", "next_step": "Discovery call booked", "type": "New Business", "contact_count": 2 },
+    { "id": "006A00006", "name": "Hooli — Platform", "account": "Hooli", "amount": 120000, "probability": 50, "stage": "Value Proposition", "close_date": "2026-10-31", "last_activity_date": "2026-09-23", "next_step": "Align on ROI model", "type": "New Business", "contact_count": 4 },
+    { "id": "006A00007", "name": "Vandelay — Expansion", "account": "Vandelay Industries", "amount": 25000, "probability": 75, "stage": "Proposal/Price Quote", "close_date": "2026-09-29", "last_activity_date": "2026-09-10", "next_step": "", "type": "Upsell", "contact_count": 1 }
+  ],
+  "tasks": [
+    { "id": "00TA00001", "subject": "Call: Acme pricing sync", "type": "Call", "activity_date": "2026-09-24", "status": "Open", "related_account": "Acme Corp", "related_opp_id": "006A00001" },
+    { "id": "00TA00002", "subject": "Call: Vandelay check-in", "type": "Call", "activity_date": "2026-09-18", "status": "Open", "related_account": "Vandelay Industries", "related_opp_id": "006A00007" },
+    { "id": "00TA00003", "subject": "Call: Hooli technical demo", "type": "Call", "activity_date": "2026-09-26", "start_time": "14:00", "status": "Open", "related_account": "Hooli", "related_opp_id": "006A00006" }
+  ],
+  "leads": [
+    { "id": "00LA00001", "name": "Dana Kim", "company": "TechNova", "status": "New", "created_date": "2026-09-23", "last_activity_date": null },
+    { "id": "00LA00002", "name": "Sam Patel", "company": "Brightling", "status": "New", "created_date": "2026-09-25", "last_activity_date": null },
+    { "id": "00LA00003", "name": "Chris Lee", "company": "Oldcorp", "status": "Working", "created_date": "2026-08-01", "last_activity_date": "2026-09-10" }
+  ],
+  "signals": [
+    { "kind": "meeting_external", "account": "Acme Corp", "who": "Dana Reed (Acme Corp)", "title": "Acme Corp <> Us — contract review", "today": true, "when": "today 15:00", "source": "calendar", "link": "https://calendar.google.com/calendar/event?eid=SAMPLE", "why": "Acme booked a contract review for today — they are ready to talk terms" },
+    { "kind": "customer_message", "account": "Stark Industries", "who": "Priya Shah (Stark Industries)", "age_hours": 2, "when": "2h ago", "source": "slack", "link": "https://example.slack.com/archives/SAMPLE" }
+  ]
+}

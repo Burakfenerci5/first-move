@@ -78,6 +78,13 @@ def mk(key, catalog, account, value, urgency, severity, fields, why):
     value, urgency, severity = clamp(value), clamp(urgency), clamp(severity)
     score = w["value"] * value + w["urgency"] * urgency + w["severity"] * severity
     scope = rec.get("scope", "account")
+    # Render hints drive the opening widget (see references/opening-widget.md):
+    # `variant` picks the callout color, `eyebrow` is the short action label.
+    # Both are catalog-tunable; fall back to urgency-derived defaults so a play
+    # without hints still renders sensibly.
+    render = rec.get("render", {})
+    variant = render.get("variant") or (
+        "error" if urgency >= 0.8 else "warning" if urgency >= 0.5 else "recommended")
     return {
         "key": key,
         "enabled": rec.get("enabled", True),
@@ -89,11 +96,15 @@ def mk(key, catalog, account, value, urgency, severity, fields, why):
         "title": rec["title"].format(**fields),
         "button": rec["button"].format(**fields),
         "skill_chain": rec["skill_chain"],
+        "variant": variant,
+        "eyebrow": render.get("eyebrow", "Next move"),
         "value": round(value, 3),
         "urgency": round(urgency, 3),
         "severity": round(severity, 3),
         "score": round(score, 4),
         "why": why,
+        "origin": "salesforce",   # signals may enrich this; workspace plays set "workspace"
+        "signal": None,           # populated when a cross-connector signal boosts this play
     }
 
 
@@ -390,9 +401,127 @@ def detect_leader(book, catalog):
 
 
 # --------------------------------------------------------------------------- #
+# Signals — cross-connector enrichment (Salesforce-anchored).
+#
+# Salesforce deals/calls/leads remain the spine. Signals are lightweight events
+# the assistant gathers at runtime from OTHER connected sources (calendar
+# meetings, inbound email, customer Slack messages — see references/signals-
+# scan.md) and drops into the book as a `signals` array. They do two things:
+#   1. Boost + enrich a Salesforce play when the signal is about the same account
+#      (urgency bump, and a note appended to the "why").
+#   2. Originate a "workspace" play when the signal maps to no account — used
+#      ONLY to fill Top-N slots the Salesforce book leaves empty (thin pipeline).
+# The scoring model is unchanged; signals just feed it more candidates/urgency.
+# --------------------------------------------------------------------------- #
+def rescore(c, catalog):
+    w = catalog["weights"]
+    c["score"] = round(
+        w["value"] * c["value"] + w["urgency"] * c["urgency"] + w["severity"] * c["severity"], 4)
+    return c
+
+
+def signal_urgency(sig, cfg):
+    """Recency → urgency in [0,1]. A meeting flagged `today` maxes out; otherwise
+    fall off with age_hours (hot → warm → cold). Missing age = neutral."""
+    if sig.get("today"):
+        return 1.0
+    age = sig.get("age_hours")
+    if age is None:
+        return 0.6
+    if age <= cfg.get("hot_hours", 4):
+        return 0.95
+    if age <= cfg.get("warm_hours", 24):
+        return 0.6
+    return 0.35
+
+
+def _signal_ref(sig):
+    """The compact provenance we keep on a play for rendering (source + link)."""
+    return {k: sig[k] for k in ("source", "who", "link", "when") if sig.get(k)}
+
+
+def build_signal_candidate(sig, catalog, persona):
+    """Turn an unmatched signal into a workspace-origin candidate (fallback fill)."""
+    cfg = catalog.get("signals", {})
+    spec = cfg.get("origination", {}).get(sig.get("kind", ""))
+    if not spec or not spec.get("enabled", True):
+        return None
+    if spec.get("persona", "both") not in (persona, "both"):
+        return None
+    fields = {"title": sig.get("title", ""), "who": sig.get("who", "")}
+    value = clamp(spec.get("value_proxy", 0.4))
+    urgency = clamp(signal_urgency(sig, cfg))
+    severity = clamp(spec.get("severity", 0.4))
+    render = spec.get("render", {})
+    account = sig.get("account") or sig.get("who") or "your workspace"
+    why = sig.get("why")
+    if not why:  # synthesize a plain-language why when the signal didn't carry one
+        who = sig.get("who")
+        when = "today" if sig.get("today") else (sig.get("when") or "recently")
+        if sig["kind"] == "meeting_external":
+            why = "On your calendar {when}{who} — no prep logged yet.".format(
+                when=when, who=" with %s" % who if who else "")
+        else:
+            why = "{who} reached out{when} and is waiting on you.".format(
+                who=who or "Someone", when=" %s" % when if when != "recently" else "")
+    c = {
+        "key": sig["kind"],
+        "enabled": True,
+        "persona": spec.get("persona", "both"),
+        "scope": spec.get("scope", "account"),
+        "dkey": sig.get("account") or sig.get("who"),
+        "effort": spec.get("effort", "low"),
+        "account": account,
+        "title": spec["title"].format(**fields),
+        "button": spec["button"].format(**fields),
+        "skill_chain": spec["skill_chain"],
+        "variant": render.get("variant", "warning"),
+        "eyebrow": render.get("eyebrow", "Workspace"),
+        "value": round(value, 3),
+        "urgency": round(urgency, 3),
+        "severity": round(severity, 3),
+        "score": 0.0,
+        "why": why,
+        "origin": "workspace",
+        "signal": _signal_ref(sig),
+    }
+    return rescore(c, catalog)
+
+
+def apply_signals(candidates, signals, catalog, persona):
+    """Boost/enrich Salesforce candidates whose account a signal names; collect
+    the rest as workspace-origin candidates. Returns (candidates, workspace)."""
+    cfg = catalog.get("signals", {})
+    boost = cfg.get("urgency_boost", 0.15)
+    by_acct = {}
+    for c in candidates:
+        if c.get("account"):
+            by_acct.setdefault(c["account"].lower(), []).append(c)
+
+    workspace = []
+    for sig in signals:
+        acct = (sig.get("account") or "").strip().lower()
+        matched = by_acct.get(acct) if acct else None
+        if matched:
+            w = signal_urgency(sig, cfg)
+            for c in matched:
+                c["urgency"] = round(clamp(c["urgency"] + boost * w), 3)
+                c["signal"] = _signal_ref(sig)
+                note = sig.get("why") or sig.get("title")
+                if note:
+                    c["why"] = "{} · {}".format(c["why"].rstrip("."), note)
+                rescore(c, catalog)
+        else:
+            wc = build_signal_candidate(sig, catalog, persona)
+            if wc:
+                workspace.append(wc)
+    return candidates, workspace
+
+
+# --------------------------------------------------------------------------- #
 # Rank + select
 # --------------------------------------------------------------------------- #
-def select_top(candidates, catalog, persona):
+def select_top(candidates, catalog, persona, workspace=None):
     rules = catalog.get("rules", {})
     top_n = rules.get("top_n", 3)
     use_div = rules.get("diversify", False)
@@ -421,14 +550,32 @@ def select_top(candidates, catalog, persona):
         if c["dkey"] is not None:
             seen.add(c["dkey"])
 
+    # Salesforce-anchored: only when the book leaves slots open do workspace
+    # (cross-connector) plays fill in — a thin pipeline never hides a real deal.
+    ws_ranked = sorted(
+        (c for c in (workspace or []) if c["enabled"]
+         and catalog.get("signals", {}).get("origination", {})
+             .get(c["key"], {}).get("persona", "both") in (persona, "both")),
+        key=lambda c: c["score"], reverse=True)
+    for c in ws_ranked:
+        if len(top) >= top_n:
+            break
+        if use_div and c["dkey"] is not None and c["dkey"] in seen:
+            continue
+        top.append(c)
+        if c["dkey"] is not None:
+            seen.add(c["dkey"])
+
     # Guarantee at least one quick win (low-effort) in the Top N.
     if rules.get("guarantee_quick_win") and top and not any(c["effort"] == "low" for c in top):
         low = next((c for c in ranked if c["effort"] == "low" and c not in top), None)
         if low:
             top[-1] = low
-            top.sort(key=lambda c: c["score"], reverse=True)
 
-    return ranked, top
+    top.sort(key=lambda c: c["score"], reverse=True)
+    # Displayed ranked list shows every candidate considered, both origins.
+    ranked_display = sorted(ranked + ws_ranked, key=lambda c: c["score"], reverse=True)
+    return ranked_display, top
 
 
 # --------------------------------------------------------------------------- #
@@ -443,6 +590,8 @@ def main():
     ap.add_argument("--persona", choices=["rep", "leader"], help="override book persona")
     ap.add_argument("--no-ev", action="store_true", help="score on raw amount, not expected value")
     ap.add_argument("--no-diversify", action="store_true", help="allow multiple cards per account")
+    ap.add_argument("--no-signals", action="store_true",
+                    help="ignore the book's cross-connector `signals` (Salesforce-only)")
     ap.add_argument("--json", action="store_true",
                     help="print only the machine-readable JSON (for the SessionStart hook)")
     args = ap.parse_args()
@@ -457,7 +606,16 @@ def main():
     rep = book["rep"]
     persona = args.persona or rep.get("persona", "rep")
     candidates = detect_leader(book, catalog) if persona == "leader" else detect_rep(book, catalog)
-    ranked, top = select_top(candidates, catalog, persona)
+
+    # Cross-connector signals enrich the Salesforce candidates and can fill thin
+    # slots (Salesforce-anchored). The engine stays pure: the assistant gathers
+    # signals at runtime and passes them in the book (see references/signals-scan.md).
+    signals = [] if args.no_signals else book.get("signals", [])
+    workspace = []
+    if signals:
+        candidates, workspace = apply_signals(candidates, signals, catalog, persona)
+
+    ranked, top = select_top(candidates, catalog, persona, workspace)
 
     payload = {"rep": rep, "as_of": catalog["as_of"], "persona": persona, "top": top}
     if args.json:
